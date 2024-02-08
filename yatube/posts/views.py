@@ -1,19 +1,30 @@
-from django.conf import settings
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import render, get_object_or_404
+from .models import Post, Group
+from yatube.settings import QTY_POSTS_PAGE
 
-from .models import Group, Post
+# Create your views here.
 
 
 def index(request):
-    """Выводим на страницу первые 10 записей постов."""
-
-    posts = Post.objects.select_related('author')[:settings.POSTS_PAGE]
-    return render(request, 'posts/index.html', {'posts': posts})
+    template = 'posts/index.html/'
+    posts = posts = Post.objects.all()[:QTY_POSTS_PAGE]
+    title = 'Последние обновления на сайте'
+    context = {
+        'title': title,
+        'posts': posts,
+    }
+    return render(request, template, context)
 
 
 def group_posts(request, slug):
-    """Выводим на страницу первые 10 записей групп."""
-
     group = get_object_or_404(Group, slug=slug)
-    posts = group.posts.select_related('author')[:settings.GROUPS_PAGE]
-    return render(request, 'posts/group_list.html', {'group': group, 'posts': posts})
+    template = 'posts/group_list.html/'
+    posts = group.posts.all()[:QTY_POSTS_PAGE]
+    title = 'Здесь будет информация о группах проекта Yatube'
+    context = {
+        'title': title,
+        'group': group,
+        'posts': posts,
+    }
+    return render(request, template, context)
+#    return HttpResponse(f'А это невьебенный пост от нашего блогера {sl}')
